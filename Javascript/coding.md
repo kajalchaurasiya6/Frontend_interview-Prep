@@ -4,6 +4,7 @@ Input: "hello"
 Output: "olleh"
 
 ## built-in solution
+```javascript
 const reverseString = (str = "") =>
   str.split("").reverse().join("");
 
@@ -17,9 +18,9 @@ function reverseString(str) {
 
   return result;
 }
-
+```
 ## Two-pointer approach
-
+```javascript
 function reverseString(str) {
   let arr = str.split("");
   let left = 0;
@@ -33,9 +34,9 @@ function reverseString(str) {
 
   return arr.join("");
 }
-
+```
 ## Q2: Palindrome check
-
+```javascript
     function isPalindrome(str) {
   let left = 0;
   let right = str.length - 1;
@@ -51,7 +52,7 @@ function reverseString(str) {
 
   return true;
 }
-
+```
 ## Q3 :# Implement a Generic Curry Function
 
 # Problem Statement
