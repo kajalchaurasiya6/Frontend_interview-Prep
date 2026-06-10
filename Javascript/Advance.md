@@ -1435,7 +1435,7 @@ Because parent catches child events after they occur.
 
 > Event propagation has three phases: capturing (top-down), target, and bubbling (bottom-up). By default, JavaScript uses bubbling.
 
-## 8  Async JavaScript: setTimeout vs Promises (Microtask vs Macrotask)
+## 12. Async JavaScript: setTimeout vs Promises (Microtask vs Macrotask)
 
 # Why this topic matters?
 

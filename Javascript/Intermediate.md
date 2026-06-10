@@ -2287,4 +2287,413 @@ Classes are just syntactic sugar over prototypes.
 * Lifecycle methods come from prototype chain
 * Hooks replaced most inheritance-based patterns
 
+## 16  What is Currying in JavaScript?
 
+# What is Currying?
+
+Currying is a technique in JavaScript where a function with multiple arguments is transformed into a sequence of functions, each taking a single argument.
+
+Instead of:
+
+```javascript
+sum(1, 2, 3);
+```
+
+We can write:
+
+```javascript
+sum(1)(2)(3);
+```
+
+---
+
+# Why is Currying Used?
+
+Currying helps in:
+
+* Function reusability
+* Partial application
+* Creating specialized functions
+* Improving code readability
+
+# Example
+
+```javascript
+function sum(a) {
+  return function (b) {
+    return function (c) {
+      return a + b + c;
+    };
+  };
+}
+
+console.log(sum(1)(2)(3));
+```
+
+### Output
+
+```javascript
+6
+```
+
+---
+
+# How it Works?
+
+### Step 1
+
+```javascript
+sum(1)
+```
+
+Returns:
+
+```javascript
+function (b) {
+  return function (c) {
+    return a + b + c;
+  };
+}
+```
+
+Where `a = 1` is remembered through closure.
+
+### Step 2
+
+```javascript
+sum(1)(2)
+```
+
+Returns:
+
+```javascript
+function (c) {
+  return a + b + c;
+}
+```
+
+Where:
+
+* `a = 1`
+* `b = 2`
+
+are remembered through closures.
+
+### Step 3
+
+```javascript
+sum(1)(2)(3)
+```
+
+Returns:
+
+```javascript
+6
+```
+# Currying vs Normal Function
+
+## Normal Function
+
+```javascript
+function add(a, b, c) {
+  return a + b + c;
+}
+
+add(1, 2, 3);
+```
+
+---
+
+## Curried Function
+
+```javascript
+function add(a) {
+  return function (b) {
+    return function (c) {
+      return a + b + c;
+    };
+  };
+}
+
+add(1)(2)(3);
+```
+
+---
+
+# Benefits of Currying
+
+## Function Reusability
+
+```javascript
+function multiply(a) {
+  return function (b) {
+    return a * b;
+  };
+}
+
+const double = multiply(2);
+
+console.log(double(5));
+console.log(double(10));
+```
+
+### Output
+
+```javascript
+10
+20
+```
+
+---
+
+# Real-World Example
+
+```javascript
+function greet(greeting) {
+  return function (name) {
+    return `${greeting}, ${name}`;
+  };
+}
+
+const sayHello = greet("Hello");
+
+console.log(sayHello("Kajal"));
+```
+
+### Output
+
+```javascript
+Hello, Kajal
+```
+
+---
+
+# Closure Connection
+
+Currying works because of closures.
+
+Each returned function remembers variables from its outer scope even after the outer function has finished execution.
+
+---
+
+# Interview One-Liner
+
+> Currying is a technique of transforming a function that takes multiple arguments into a sequence of functions, each taking one argument at a time.
+
+---
+
+# Common Interview Questions
+
+1. What is currying in JavaScript?
+2. How is currying different from partial application?
+3. How do closures help currying work?
+4. What are the benefits of currying?
+5. Implement a generic curry function.
+
+## 17  What is `Array.prototype.map()` in JavaScript?
+
+
+# What is map()?
+
+`map()` is an array method that creates a **new array** by applying a callback function to each element of the original array.
+
+It does not modify the original array.
+
+# Syntax
+
+```javascript id="m1"
+array.map((currentValue, index, array) => {
+  return transformedValue;
+});
+```
+# Example
+
+```javascript id="m2"
+const numbers = [1, 2, 3];
+
+const doubled = numbers.map(num => num * 2);
+
+console.log(doubled);
+```
+
+### Output
+
+```javascript id="m3"
+[2, 4, 6]
+```
+# How map Works Internally
+
+```javascript id="m4"
+const arr = [1, 2, 3];
+```
+For each element:
+
+```text id="m5"
+1 → 2
+2 → 4
+3 → 6
+```
+
+The returned values are collected into a new array.
+
+---
+
+# Important Characteristics
+
+### Returns a new array
+
+```javascript id="m6"
+const arr = [1, 2, 3];
+
+const result = arr.map(x => x * 2);
+```
+
+Original array remains unchanged.
+
+---
+
+### Executes callback for every element
+
+```javascript id="m7"
+arr.map((value, index) => {
+  console.log(value, index);
+});
+```
+### Length remains the same
+
+```javascript id="m8"
+[1, 2, 3].map(x => x * 10);
+```
+
+Output:
+
+```javascript id="m9"
+[10, 20, 30]
+```
+
+Input length = Output length
+
+---
+
+# map vs forEach
+
+| Feature            | map | forEach |
+| ------------------ | --- | ------- |
+| Returns new array  | ✅   | ❌       |
+| Can transform data | ✅   | ❌       |
+| Chainable          | ✅   | ❌       |
+
+---
+
+# React Connection
+
+Very common in React:
+
+```javascript id="m10"
+const users = ["A", "B", "C"];
+
+return (
+  <>
+    {users.map(user => (
+      <li key={user}>{user}</li>
+    ))}
+  </>
+);
+```
+
+---
+
+# Interview One-Liner
+
+> `map()` iterates over an array, applies a callback to each element, and returns a new array containing the transformed values.
+
+---
+
+# Common Interview Questions
+
+1. Does map mutate the original array?
+2. Difference between map and forEach?
+3. Why does map return a new array?
+4. What arguments does map callback receive?
+5. Implement a map polyfill.
+
+## 18. What is the difference between map() and forEach()?
+## Answer :  
+   | map()                   | forEach()             |
+| ----------------------- | --------------------- |
+| Returns a new array     | Returns undefined     |
+| Used for transformation | Used for side effects |
+| Chainable               | Not chainable         |
+
+Use map() when you need a transformed array and forEach() when you simply want to perform an action on each element.
+
+## 19. What is Array.prototype.filter() in JavaScript?
+## Answer:-  
+   filter() is an array method that creates a new array containing only those elements that satisfy a given condition.
+
+The callback function must return:
+
+true → element is included
+false → element is excluded
+
+The original array is not modified.
+filter() iterates over an array and returns a new array containing only the elements for which the callback function returns true.
+
+## 20. What is Array.prototype.reduce() in JavaScript?
+## Answer:-
+   reduce() is an array method that iterates over an array and reduces it to a single value by applying a callback function on each element.
+   ## Syntax:
+   array.reduce((accumulator, currentValue, index, array) => {
+  return updatedAccumulator;
+}, initialValue);
+
+## 21. What is Memoization in JavaScript?
+## Answer:
+Memoization is an optimization technique where we cache the result of a function call and return the cached result when the same inputs are provided again.
+
+Instead of recalculating, we reuse the previously computed value.
+## Why Do We Need Memoization?
+```javascript 
+function square(n) {
+  console.log("Calculating...");
+  return n * n;
+}
+square(5);
+square(5);
+square(5);
+The same computation runs multiple times.
+```
+## 22. What is Array Flattening in JavaScript?
+## Answer:
+   Array flattening is the process of converting a nested array into a single-level array.
+It removes nested array structures and brings all elements into one array.
+## Bui;t-in solution array.flat(Infinity);
+Common use cases:
+
+API response transformation
+Tree data processing
+Nested comments
+Menu structures
+Recursive data rendering
+## 23.  How can flattening be implemented without flat()?
+
+Answer:
+
+Using:
+
+Recursion
+Reduce + Recursion
+Stack-based approach
+Recursion is the most common interview solution.
+
+## 24 .Why is recursion commonly used?
+
+## Answer:
+
+Because nested arrays naturally form a recursive structure.
+
+Each nested array can be processed the same way as the parent array.
+
+Interview One-Liner
+
+Array flattening is the process of converting a nested array into a single-level array by recursively extracting elements from nested arrays.
