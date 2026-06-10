@@ -1649,7 +1649,6 @@ Promise.resolve().then(() => console.log("B"));
 
 console.log("C");
 ```
-
 ✔ Answer:
 
 ```text id="as13"
@@ -1657,16 +1656,12 @@ C
 B
 A
 ```
-
----
-
 # 12. Interview One-Liner
 
 > Microtasks (Promises) always execute before Macrotasks (setTimeout) because the event loop prioritizes the microtask queue after each synchronous execution.
 
----
 
-
+ 
 
 
 
