@@ -117,7 +117,7 @@ Reconciliation is the process React uses to compare the old Virtual DOM with the
 
 Its goal is to update the UI efficiently without re-rendering the entire page.
 
-# 4 Q. Why are Keys Important in React?
+# 4 . Why are Keys Important in React?
 # Answer
 
 Keys are special attributes used by React to uniquely identify elements in a list.
@@ -130,3 +130,50 @@ Updated
 Reordered
 during the reconciliation process.
 Keys help React uniquely identify list items during reconciliation, enabling efficient DOM updates and preventing unnecessary re-renders.
+
+# 5. What are Props in React?
+# Answer:
+    Props  are used to pass data from a parent component to a child component.
+They are read-only and immutable, meaning a child component cannot modify the props it receives.
+When props change, React re-renders the component with the updated values.
+## Example:
+```javascript
+function Welcome(props) {
+  return <h1>Hello {props.name}</h1>;
+}
+
+function App() {
+  return <Welcome name="Kajal" />;
+}
+```
+
+# 6. Props vs State
+| Props                            | State                               |
+| -------------------------------- | ----------------------------------- |
+| Passed from parent to child      | Managed inside the component        |
+| Immutable (read-only)            | Mutable (can be updated)            |
+| Controlled by parent component   | Controlled by component itself      |
+| Used for component configuration | Used for dynamic UI data            |
+| Changes come from parent         | Changes via state updater functions |
+
+# 7. What is State in React?
+## Answer
+
+State is a built-in React mechanism used to store and manage dynamic data within a component.
+
+When state changes, React automatically re-renders the component and updates the UI.
+
+Unlike props, state is mutable and can be updated using state updater functions such as setState (class components) or useState (functional components).
+
+ ## 8. Why shouldn't we update state directly in React?
+
+# Answer:
+
+We should not update state directly because React will not know that the state has changed.
+
+React tracks state updates through setter functions like setState() or setCount(). When we use these functions, React schedules a re-render and updates the UI.
+
+Direct mutation changes the object in memory but does not notify React, so the UI may not update.
+``` javascript
+We should not mutate state directly because React relies on state setter functions to detect changes and trigger re-renders. Direct mutation can lead to stale UI and unpredictable behavior.
+```
