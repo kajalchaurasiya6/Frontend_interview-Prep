@@ -928,3 +928,669 @@ No.
 Rendering creates HTML.
 
 Hydration attaches React behavior to already existing HTML.
+
+# Q. What is createAsyncThunk and how do you handle API calls in Redux Toolkit?
+Answer
+
+createAsyncThunk is a Redux Toolkit utility used to handle asynchronous operations such as:
+
+API Calls
+Data Fetching
+Async Business Logic
+
+It automatically generates action types for:
+
+pending
+fulfilled
+rejected
+
+which makes async state management much easier.
+
+Why Do We Need createAsyncThunk?
+
+Without it, we manually dispatch:
+
+FETCH_USER_REQUEST
+FETCH_USER_SUCCESS
+FETCH_USER_FAILURE
+
+This creates a lot of boilerplate
+
+# Example:
+```jsx
+import { createAsyncThunk } from "@reduxjs/toolkit";
+
+export const fetchUsers = createAsyncThunk(
+  "users/fetchUsers",
+  async () => {
+    const response = await fetch(
+      "https://jsonplaceholder.typicode.com/users"
+    );
+
+    return response.json();
+  }
+);
+```
+What Happens Internally?
+dispatch(fetchUsers());
+Redux Toolkit automatically dispatches:
+users/fetchUsers/pending
+users/fetchUsers/fulfilled
+users/fetchUsers/rejected
+
+# Handling states in slice
+```jsx
+import {
+  createSlice,
+  createAsyncThunk,
+} from "@reduxjs/toolkit";
+
+export const fetchUsers = createAsyncThunk(
+  "users/fetchUsers",
+  async () => {
+    const response = await fetch("/users");
+
+    return response.json();
+  }
+);
+
+const usersSlice = createSlice({
+  name: "users",
+
+  initialState: {
+    data: [],
+    loading: false,
+    error: null,
+  },
+
+  reducers: {},
+
+  extraReducers: (builder) => {
+    builder
+
+      .addCase(
+        fetchUsers.pending,
+        (state) => {
+          state.loading = true;
+        }
+      )
+
+      .addCase(
+        fetchUsers.fulfilled,
+        (state, action) => {
+          state.loading = false;
+          state.data = action.payload;
+        }
+      )
+
+      .addCase(
+        fetchUsers.rejected,
+        (state, action) => {
+          state.loading = false;
+          state.error = action.error.message;
+        }
+      );
+  },
+});
+
+export default usersSlice.reducer;
+```
+# flow
+Component
+    ↓
+dispatch(fetchUsers())
+    ↓
+pending
+    ↓
+API Call
+    ↓
+fulfilled / rejected
+    ↓
+Store Updated
+    ↓
+UI Re-renders
+
+# Component Example
+```jsx
+function Users() {
+  const dispatch = useDispatch();
+
+  const { data, loading } =
+    useSelector(
+      state => state.users
+    );
+
+  useEffect(() => {
+    dispatch(fetchUsers());
+  }, []);
+
+  if (loading) {
+    return <h1>Loading...</h1>;
+  }
+
+  return (
+    <div>
+      {data.map(user => (
+        <p key={user.id}>
+          {user.name}
+        </p>
+      ))}
+    </div>
+  );
+}
+```
+# . Why do we use extraReducers?
+
+Answer:
+
+Because async thunk actions are generated outside the slice.
+
+We handle them using:
+
+extraReducers
+
+instead of:
+
+reducers
+
+# Q. What is React Query (TanStack Query) and how is it different from Redux?
+Answer
+
+React Query (now called TanStack Query) is a library used for fetching, caching, synchronizing, and updating server data in React applications.
+
+It simplifies API data management and removes much of the boilerplate associated with loading, error handling, caching, and refetching.
+
+Why Was React Query Introduced?
+
+In traditional react:
+```jsx
+useEffect(() => {
+  fetchUsers();
+}, []);
+```
+Problems:
+Loading State
+Error State
+Caching
+Refetching
+Background Updates
+Duplicate Requests
+Developers had to handle all of these manually.
+React Query Solution
+```jsx
+const { data, isLoading, error } = useQuery({
+  queryKey: ["users"],
+  queryFn: fetchUsers,
+});
+```
+React Query handles:
+
+✅ Loading
+
+✅ Error handling
+
+✅ Caching
+
+✅ Refetching
+
+✅ Background synchronization
+
+# Example:
+```jsx
+import { useQuery } from "@tanstack/react-query";
+
+function Users() {
+  const {
+    data,
+    isLoading,
+    error,
+  } = useQuery({
+    queryKey: ["users"],
+    queryFn: async () => {
+      const res = await fetch("/users");
+      return res.json();
+    },
+  });
+
+  if (isLoading) {
+    return <h1>Loading...</h1>;
+  }
+
+  if (error) {
+    return <h1>Error</h1>;
+  }
+
+  return (
+    <>
+      {data.map(user => (
+        <p key={user.id}>
+          {user.name}
+        </p>
+      ))}
+    </>
+  );
+}
+```
+
+What is Caching?
+
+First request:
+
+API Call
+   ↓
+Data Cached
+
+Second request:
+
+Data Returned From Cache
+
+No unnecessary API call.
+
+Automatic Refetching
+
+React Query can automatically refetch when:
+
+User Revisits Tab
+Network Reconnects
+Page Refreshes
+
+This keeps data fresh.
+
+React query vs Redux
+| React Query      | Redux                   |
+| ---------------- | ----------------------- |
+| Server State     | Client State            |
+| API-focused      | Global State Management |
+| Built-in caching | No built-in caching     |
+| Auto refetch     | Manual implementation   |
+| Less boilerplate | More setup              |
+| Fetching data    | Managing app state      |
+
+Server State
+
+Data from backend:
+
+Users
+Products
+Orders
+Comments
+
+Client State
+
+Data created in frontend:
+Theme
+Sidebar Open/Close
+Selected Tab
+Modal State
+
+# Q. Can React Query replace Redux?
+
+Answer:
+
+Partially.
+
+React Query can replace Redux for server state management.
+
+Redux may still be useful for complex client-side state.
+
+Common Interview Questions
+Q. What problem does React Query solve?
+
+Answer:
+
+It simplifies fetching, caching, synchronization, and updating of server data.
+
+Q. Does React Query cache data?
+
+Answer:
+
+Yes.
+
+Caching is one of its biggest advantages.
+
+Q. What is queryKey?
+
+Answer:
+
+A unique identifier for cached data.
+
+Example:
+
+queryKey: ["users"]
+Q. What is useMutation?
+
+Answer:
+
+Used for:
+
+POST
+PUT
+PATCH
+DELETE
+
+operations.
+
+While useQuery is used for fetching data.
+
+Interview Trap
+Q. Should all API calls be stored in Redux?
+
+Answer:
+
+Not necessarily.
+
+Modern applications often use:
+
+React Query
+RTK Query
+
+for server state and Redux for client state.
+
+
+# Controlled vs unControlled Component
+
+# Q. What are Controlled and Uncontrolled Components in React?
+Answer
+
+A form element is called:
+
+Controlled Component when React controls its value through state.
+Uncontrolled Component when the DOM itself manages the value.
+Controlled Component
+
+React state is the single source of truth.
+# Example:
+```jsx
+import { useState } from "react";
+
+function App() {
+  const [name, setName] = useState("");
+
+  return (
+    <input
+      value={name}
+      onChange={(e) => setName(e.target.value)}
+    />
+  );
+}
+```
+
+# Uncontrolled Component
+
+Value is managed by the DOM.
+# Example
+```jsx
+import { useRef } from "react";
+
+function App() {
+  const inputRef = useRef();
+
+  const handleSubmit = () => {
+    console.log(inputRef.current.value);
+  };
+
+  return (
+    <>
+      <input ref={inputRef} />
+      <button onClick={handleSubmit}>
+        Submit
+      </button>
+    </>
+  );
+}
+
+| Controlled          | Uncontrolled      |
+| ------------------- | ----------------- |
+| Uses state          | Uses ref          |
+| React controls data | DOM controls data |
+| Easier validation   | Less control      |
+| More re-renders     | Fewer re-renders  |
+```
+# . Which one is preferred?
+
+Answer:
+
+Controlled components are generally preferred because React has full control over the form data.
+
+# What does useRef return?
+
+ answer:
+
+useRef returns a mutable object with a current property. When attached to a DOM element using the ref attribute, current points to that DOM node. It can also be used to store mutable values that persist across renders without causing re-renders.
+
+# Q. What is Lifting State Up in React?
+Answer
+
+Lifting State Up is a pattern in React where state is moved from child components to their closest common parent component so that multiple child components can share and synchronize the same data.
+
+# Example
+
+```jsx
+  import { useState } from "react";
+
+function Parent() {
+  const [name, setName] = useState("");
+
+  return (
+    <>
+      <ChildA
+        name={name}
+        setName={setName}
+      />
+
+      <ChildB
+        name={name}
+      />
+    </>
+  );
+}
+
+ChildA
+function ChildA({ name, setName }) {
+  return (
+    <input
+      value={name}
+      onChange={(e) =>
+        setName(e.target.value)
+      }
+    />
+  );
+}
+
+ChildB
+
+function ChildB({ name }) {
+  return <h1>{name}</h1>;
+}
+```
+
+Common Interview Questions
+Q. Why do we lift state up?
+
+Answer:
+
+To share data between multiple components and keep a single source of truth.
+
+Q. Where should state be placed?
+
+Answer:
+
+In the closest common parent of the components that need access to that state.
+
+Q. Is lifting state up the same as Context API?
+
+Answer:
+
+No.
+
+Lifting State Up → Parent-child sharing
+Context API → Avoid prop drilling across deeply nested components
+
+If asked:
+
+"When would you use Lifting State Up vs Context API?"
+
+Answer:
+
+If only a few related components need the data, I prefer Lifting State Up. If the data needs to be accessed across many nested components, I use Context API or Redux.
+
+# Q. What is a Higher Order Component (HOC)?
+
+Answer:
+
+A Higher Order Component (HOC) is a function that takes a component as an argument and returns a new component with additional functionality or behavior.
+
+It is used for code reuse, logic sharing, and cross-cutting concerns.
+
+# Example
+```jsx
+function withLogger(Component) {
+  return function EnhancedComponent(props) {
+    console.log("Component Rendered");
+
+    return <Component {...props} />;
+  };
+}
+
+Component
+function User() {
+  return <h1>User Component</h1>;
+}
+Enhanced Component
+const UserWithLogger = withLogger(User);
+
+Usage:
+
+<UserWithLogger />
+
+Output:
+
+Component Rendered
+User Component
+Flow
+Component
+    ↓
+Pass To HOC
+    ↓
+HOC Adds Extra Logic
+    ↓
+Returns Enhanced Component
+```
+
+Common Interview Questions
+Q. Why use HOCs?
+
+Answer:
+
+To reuse component logic without duplicating code.
+
+Q. Does HOC modify the original component?
+
+Answer:
+
+No.
+
+It returns a new enhanced component.
+
+Q. Is React.memo a HOC?
+
+Answer:
+
+Yes.
+
+const MemoizedComponent =
+  React.memo(MyComponent);
+
+React.memo takes a component and returns an enhanced component.
+
+# Q. What are Render Props in React?
+Answer
+
+Render Props is a React pattern where a component shares logic by passing a function as a prop, and that function returns JSX to be rendered.
+
+It is another way of reusing component logic.
+
+# Which would you prefer: HOC, Render Props, or Custom Hooks?
+
+A good answer is:
+
+In modern React, I prefer Custom Hooks because they provide reusable logic with less nesting and better readability. HOCs and Render Props were more common before Hooks were introduced.
+
+# Q. What is useReducer and when would you use it instead of useState?
+
+Answer:
+
+useReducer is a React Hook used for managing complex state logic.
+
+It works similarly to Redux and follows the Reducer pattern where actions are dispatched and a reducer function determines how the state should be updated.
+
+I typically use useState for simple state management, but when multiple related state values need to be updated together or the update logic becomes complex, I prefer useReducer.
+
+# Example:
+```jsx
+const initialState = {
+  count: 0,
+};
+
+function reducer(state, action) {
+  switch (action.type) {
+    case "increment":
+      return {
+        count: state.count + 1,
+      };
+
+    case "decrement":
+      return {
+        count: state.count - 1,
+      };
+
+    default:
+      return state;
+  }
+}
+
+function Counter() {
+  const [state, dispatch] = useReducer(
+    reducer,
+    initialState
+  );
+
+  return (
+    <>
+      <h1>{state.count}</h1>
+
+      <button
+        onClick={() =>
+          dispatch({
+            type: "increment",
+          })
+        }
+      >
+        +
+      </button>
+    </>
+  );
+}
+ Q. What does useReducer return?
+
+Answer:
+
+It returns:
+
+const [state, dispatch] =
+  useReducer(reducer, initialState);
+state → current state
+dispatch → function used to trigger actions
+When to use useState vs useReducer?
+useState
+Simple Counter
+Input Field
+Modal Toggle
+Theme Toggle
+useReducer
+Shopping Cart
+Multi-step Forms
+Authentication Flow
+Complex State Logic
+```
+
