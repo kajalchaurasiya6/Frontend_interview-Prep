@@ -77,4 +77,103 @@ for(let i = 1 ; i<=n ; i++){
 }
 return sum;
 }
-console.log(sumofalldivisor(6));
+// console.log(sumofalldivisor(6));
+
+function factorial(n){
+  let result = 1;
+  for(let i = 2 ; i<=n ; i++){
+    result = result*i;
+  }
+  return result;
+}
+// console.log(factorial(5));
+
+function fibonacci(n){
+  let a = 0;
+  let b = 1;
+  let c;
+  let result = [];
+  for(let i = 2 ; i<=n ; i++){
+    c = a + b;
+    a = b;
+    b = c;
+    result.push(c);
+  }
+  return result;
+}
+// console.log(fibonacci(8));
+
+
+// Array warmup questions
+function largestEle(){
+  let arr = [1,34,2,56,79,8,-23,-25];
+  let max = -Infinity;
+  for(let ele of arr){
+    if(ele>max){
+      max = ele;
+    }
+  }
+  console.log(max);
+}
+// largestEle();
+
+function secondlargest (){
+    let arr = [1,341,2,280,79];
+let max = arr[0];
+let secondLargest = arr[1];
+for(let i = 0 ; i<arr.length ; i++){
+  if(arr[i] > max){
+    secondLargest = max;
+    max = arr[i];
+  }else if(arr[i] > secondLargest){
+    secondLargest = arr[i];
+  }
+    // console.log(i,secondLargest,max);
+
+}
+console.log(secondLargest);
+}
+
+// secondlargest();
+
+function reverseinplace (){
+      let arr = [1,2,3,4,5];
+      let left = 0 ;
+      let right = arr.length -1;
+      while(left<=right){
+        [arr[left],arr[right]] = [arr[right],arr[left]];
+        left++;
+        right--;
+      }
+console.log(arr);
+}
+// reverseinplace();
+
+var isSorted = function(nums) {
+      let sorted = false;
+      if(nums.length<=1) return true;
+  for(let i = 0 ; i <nums.length-1 ; i++){
+     if(nums[i]>nums[i+1]){
+      sorted = false;
+      break;
+     }else{
+      sorted = true;
+     }
+  }
+  return sorted;
+};
+// console.log(isSorted([1,2,3,4,56]));
+
+function freqCount(){
+  let arr = [1,2,2,3,8,5,6,5];
+  let freq = {};
+  for(let num of arr){
+    if(freq[num]){
+      freq[num]+=1;
+    }else{
+      freq[num] = 1;
+    }
+  }
+  console.log(Object.entries(freq));
+}
+freqCount();
